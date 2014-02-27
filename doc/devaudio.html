@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD W3 HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>/dev/audio "emulation" program for OS/2 using DART interface</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1>Goal</H1>
+<P>
+  I've looked for a long time for a program that can play the sample data from
+  stdin but failed; as a result this one was born. Besides, I needed a
+  simple sound output library that uses DART, so this program was used
+  both as a testbed and a usage example for it.
+</P>
+<P>
+  Its main usage for me is to serve as a output device for "sox" program,
+  maybe you can find other usages for it. Within combination with sox it
+  serves as a great sound file player, allowing even for such effects as
+  real-time flanger, vibro, reverb and so on - you can use just any effect
+  that sox can do. The only limit is that your CPU should be capable of
+  doing the effect in realtime; otherwise devaudio will detect the end of
+  input stream and quit.
+</P>
+
+<H1>Usage</H1>
+<P>
+  The basical usage is simple: when devaudio.exe is run without parameters,
+  it assumes default parameters of signed 16-bit PCM sample format recorded
+  at the rate of 44100Hz, two channels (i.e. stereo) and uses default waveaudio
+  device for output. The data read from stdin is "copied" as-is to the output
+  device, and that's it.
+</P>
+<P>
+  You can change any of the default parameters so that output parameters will
+  match those of the input stream. devaudio recognizes the following options
+  that can be used to change the way audio device interprets input data:
+
+<PRE>
+  -d# --device=#    Choose audio device index. By default devaudio uses
+                    device with index 0 which is the "default" waveaudio
+                    device in system (the one that has the "default waveaudio device"
+                    checkmark in the Multimedia Setup notebook)
+
+  -b  --bytes       Set input data format to one byte (8 bit) per sample
+
+  -w  --words       Set input data format to one word (16 bit) per sample
+                    This is the default setting.
+
+  -r# --rate=#      Set input data sampling rate. By default devaudio
+                    assumes 44100Hz.
+
+  -c# --channels=#  Define number of channels. By default devaudio assumes
+                    two channels, i.e. stereo data.
+
+  -f# --format=#    Define input data format.
+                    Supported formats: pcm, adpcm, ibm_cvsd,
+                    alaw mulaw, oki_adpcm, dvi_adpcm, digistd,
+                    digifix, avc_adpcm, ibm_adpcm, ibm_mulaw,
+                    ibm_alaw, ct_adpcm, mpeg1.
+                    By default devaudio assumes pcm data format;
+                    other data formats can be supported IF the hardware
+                    supports it; if hardware does not support a specific
+                    format, devaudio will report a error and halt.
+  -p  --progress    Display progress bar as sound is playing. Unfortunately,
+                    this is not too useful as it does not work on pipes (pipes
+                    are not seekable, so you cannot determine "file" size).
+  -s  --switch-sign Switch sign. If you have an unsigned stream of data and
+                    the format you use supposes signed data, or vice versa,
+                    you can use this option to switch sample sign. I.e. if
+                    data was signed it becomes unsigned, but if it was
+                    unsigned it becomes signed. This switches makes devaudio
+                    consume a bit (a *little* bit :) more CPU.
+</PRE>
+  All switches have both "long" and "short" form; they are equivalent, i.e.
+  "-b" is equivalent to "--bytes"; "-c2" is equivalent to "--channels=2" and
+  so on.
+</P>
+<P>
+  Usage examples:
+  <UL>
+    <LI>Play a sound file using SOX:<BR>
+        sox file.voc -t raw -s -w -c2 -r44100 - | devaudio
+    <LI>Play a sound file at 22050Hz adding a echo effect:<BR>
+        sox file.voc -t raw -swc2 -r22050 - echo 1 0.7 100 0.4 | devaudio --rate=22050
+    <LI>Play a sound file as signed bytes at 22050Hz and one channel on second waveaudio device:<BR>
+        sox file.voc -t raw -sbc1 -r22050 - echo 1 0.7 100 0.4 | devaudio -r22050 -c1 -d2 -b
+    <LI>Play a .mod file with mikmod for OS/2:<BR>
+        mikmod -d6 12war.mod | devaudio
+  </UL>
+</P>
+
+<H1>SOX notes</H1>
+<P>
+  The versions of SOX that can be found on all OS/2 sites have one consistent bug:
+  when writing data to stdout they do it in text mode, i.e. each "\n" is converted
+  into a "\n\r". This leads to awful results. I've included a precompiled version
+  of SOX 1215 that doesn't have this annoying habbit. The force SOX use stdin
+  and stdout in binary mode you should add the following lines:
+
+<PRE>
+#ifdef __EMX__
+    // Set stdin and stdout to binary mode
+    _fsetmode (stdin, "b");
+    _fsetmode (stdout, "b");
+#endif
+</PRE>
+
+  right after main () in sox.c. These are almost all changes, except that I've
+  changed a bit the makefile to use OMF object file format instead of a.out and
+  added the -Zbin-files during linking phase instead of using "rb" and "wb" open
+  flags; these changes are obvious and are not listed here.
+</P>
+
+<HR>
+
+<ADDRESS>
+   Andrew Zabolotny<br>
+   &lt;bit@eltech.ru&gt;
+</ADDRESS>
+
+</BODY>
+</HTML>

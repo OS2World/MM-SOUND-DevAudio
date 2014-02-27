@@ -1,0 +1,26 @@
+                         컴컴컴컴컴컴컴컴컴컴컴컴컴
+                          devaudio list of changes
+                  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+                  [+] New feature
+                  [-] Removed feature
+                  [*] Changed feature
+                  [!] Bug fix
+                  [;] Remark
+
+  Version 0.1.1커
+   읕컴컴컴컴컴켸
+
+[+] Added "-s" (switch sign) option for compatibility with MikMod's
+    16-bit output
+[+] Added "-p" (progress bar) option for displaying the amount of data
+    that has/has to be played. Not useful on pipes, though :-(
+[+] Added "-v" (verbose) option to see options in effect
+[!] Completely (?) removed annoying clicks on exit
+[!] Fixed a bug that caused devaudio to hang on exit when playing through
+    latest (2.07) CS4236B+ drivers.
+
+  Version 0.1.0커
+   읕컴컴컴컴컴켸
+
+[;] First public release

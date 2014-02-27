@@ -1,0 +1,3 @@
+NAME DevAudio WINDOWCOMPAT
+DESCRIPTION '/dev/audio "emulation" program for OS/2 using DART'
+STACKSIZE 65536
